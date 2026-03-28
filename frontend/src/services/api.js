@@ -1,7 +1,12 @@
 import axios from 'axios';
 
+const isProduction = import.meta.env.MODE === 'production' || (typeof window !== 'undefined' && window.location.hostname !== 'localhost');
+const API_BASE_URL = isProduction
+    ? 'https://study-tracker-mmd3.onrender.com/api'
+    : 'http://localhost:5001/api';
+
 const api = axios.create({
-    baseURL: 'http://localhost:5001/api',
+    baseURL: import.meta.env.VITE_API_URL || API_BASE_URL,
 });
 
 api.interceptors.request.use(
