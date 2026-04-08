@@ -116,7 +116,14 @@ exports.getAnalytics = async (req, res) => {
             .sort()
             .map(date => ({ date, duration: dailyProgressMap[date] }));
 
-        const skippedDays = skippedSessions.length;
+        const readDays = new Set(readSessions.map(s => {
+            return s.date ? new Date(s.date).toISOString().split('T')[0] : null;
+        }).filter(Boolean)).size;
+
+        const skippedDays = new Set(skippedSessions.map(s => {
+            return s.date ? new Date(s.date).toISOString().split('T')[0] : null;
+        }).filter(Boolean)).size;
+
         const reasonCounts = skippedSessions.reduce((acc, curr) => {
             const r = curr.reason || 'unknown';
             acc[r] = (acc[r] || 0) + 1;
@@ -132,6 +139,7 @@ exports.getAnalytics = async (req, res) => {
             totalTime,
             topicBreakdown: topicData,
             dailyProgress,
+            readDays,
             skippedDays,
             commonReasons
         });

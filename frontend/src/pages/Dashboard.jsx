@@ -94,7 +94,7 @@ const Dashboard = () => {
                     </div>
                     <div>
                         <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wide">Read Days</p>
-                        <p className="text-2xl font-bold text-gray-900 dark:text-white">{sessions?.filter(s => s.status !== 'Not Read').length || 0}</p>
+                        <p className="text-2xl font-bold text-gray-900 dark:text-white">{analytics?.readDays || 0}</p>
                     </div>
                 </div>
 
