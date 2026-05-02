@@ -124,6 +124,64 @@ exports.getAnalytics = async (req, res) => {
             return s.date ? new Date(s.date).toISOString().split('T')[0] : null;
         }).filter(Boolean)).size;
 
+        // --- NEW ANALYTICS ---
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+
+        let monthlyReadDaysSet = new Set();
+        let monthlySkippedDaysSet = new Set();
+
+        sessions.forEach(s => {
+            if (!s.date) return;
+            const d = new Date(s.date);
+            if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+                const dateStr = d.toISOString().split('T')[0];
+                if (s.status !== 'Not Read') {
+                    monthlyReadDaysSet.add(dateStr);
+                } else {
+                    monthlySkippedDaysSet.add(dateStr);
+                }
+            }
+        });
+
+        const monthlyReadDays = monthlyReadDaysSet.size;
+        const monthlySkippedDays = monthlySkippedDaysSet.size;
+
+        const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+        let readSkippedRatio = "0:0";
+        let readPercentage = 0;
+
+        if (readDays === 0 && skippedDays === 0) {
+            readSkippedRatio = "0:0";
+            readPercentage = 0;
+        } else if (skippedDays === 0) {
+            readSkippedRatio = `${readDays}:0`;
+            readPercentage = 100;
+        } else if (readDays === 0) {
+            readSkippedRatio = `0:${skippedDays}`;
+            readPercentage = 0;
+        } else {
+            const divisor = gcd(readDays, skippedDays);
+            readSkippedRatio = `${readDays / divisor}:${skippedDays / divisor}`;
+            readPercentage = Number(((readDays / (readDays + skippedDays)) * 100).toFixed(2));
+        }
+
+        const averageStudyTime = readDays > 0 ? Math.round(totalTime / readDays) : 0;
+
+        let bestStudyDayDate = null;
+        let bestStudyDayTime = 0;
+
+        for (const [date, duration] of Object.entries(dailyProgressMap)) {
+            if (duration > bestStudyDayTime) {
+                bestStudyDayTime = duration;
+                bestStudyDayDate = date;
+            }
+        }
+
+        const bestStudyDay = bestStudyDayDate ? { date: bestStudyDayDate, time: bestStudyDayTime } : null;
+        // --- END NEW ANALYTICS ---
+
         const reasonCounts = skippedSessions.reduce((acc, curr) => {
             const r = curr.reason || 'unknown';
             acc[r] = (acc[r] || 0) + 1;
@@ -141,6 +199,12 @@ exports.getAnalytics = async (req, res) => {
             dailyProgress,
             readDays,
             skippedDays,
+            monthlyReadDays,
+            monthlySkippedDays,
+            readSkippedRatio,
+            readPercentage,
+            averageStudyTime,
+            bestStudyDay,
             commonReasons
         });
     } catch (err) {

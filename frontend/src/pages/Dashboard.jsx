@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { StudyContext } from '../context/StudyContext';
 import { AuthContext } from '../context/AuthContext';
-import { Clock, Flame, Book, Plus, Download, AlertTriangle, ListFilter } from 'lucide-react';
+import { Clock, Flame, Book, Plus, Download, AlertTriangle, ListFilter, Calendar, PieChart, Activity, Trophy } from 'lucide-react';
 import Charts from '../components/Charts';
 import AddSessionModal from '../components/AddSessionModal';
 import SessionsList from '../components/SessionsList';
@@ -105,6 +105,66 @@ const Dashboard = () => {
                     <div>
                         <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wide">Skipped Days</p>
                         <p className="text-2xl font-bold text-gray-900 dark:text-white">{analytics?.skippedDays || 0}</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Extended Analytics Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4 transition-all hover:shadow-md">
+                    <div className="p-3 bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-xl">
+                        <Calendar className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wide">Monthly Progress</p>
+                        <p className="text-xl font-bold text-gray-900 dark:text-white flex items-baseline gap-2">
+                            {analytics?.monthlyReadDays || 0} <span className="text-sm font-normal text-gray-500">Read</span>
+                        </p>
+                        <p className="text-xs mt-1 font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 inline-block px-2 py-0.5 rounded">
+                            {analytics?.monthlySkippedDays || 0} Skipped
+                        </p>
+                    </div>
+                </div>
+
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4 transition-all hover:shadow-md">
+                    <div className="p-3 bg-teal-50 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400 rounded-xl">
+                        <PieChart className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wide">Read/Skipped Ratio</p>
+                        <p className="text-2xl font-bold text-gray-900 dark:text-white flex items-baseline gap-2">
+                            {analytics?.readSkippedRatio || "0:0"}
+                        </p>
+                        <p className="text-xs mt-1 font-semibold text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 inline-block px-2 py-0.5 rounded">
+                            {analytics?.readPercentage || 0}% Read
+                        </p>
+                    </div>
+                </div>
+
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4 transition-all hover:shadow-md">
+                    <div className="p-3 bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400 rounded-xl">
+                        <Activity className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wide">Avg Study Time</p>
+                        <p className="text-2xl font-bold text-gray-900 dark:text-white flex items-baseline gap-2">
+                            {analytics?.averageStudyTime || 0} <span className="text-sm font-normal text-gray-500">m / day</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4 transition-all hover:shadow-md">
+                    <div className="p-3 bg-yellow-50 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400 rounded-xl">
+                        <Trophy className="w-6 h-6" />
+                    </div>
+                    <div className="w-full min-w-0">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wide truncate">Best Study Day</p>
+                        <p className="text-lg font-bold text-gray-900 dark:text-white truncate">
+                            {analytics?.bestStudyDay ? new Date(analytics.bestStudyDay.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : "N/A"}
+                        </p>
+                        <p className="text-xs mt-1 font-semibold text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/30 inline-block px-2 py-0.5 rounded">
+                            {analytics?.bestStudyDay ? `${analytics.bestStudyDay.time} mins` : "0 mins"}
+                        </p>
                     </div>
                 </div>
             </div>
